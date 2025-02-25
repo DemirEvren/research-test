@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/TimoHubner444/test.git'
+                git branch: 'main', url: 'https://github.com/DemirEvren/research-test.git'
             }
         }
 
