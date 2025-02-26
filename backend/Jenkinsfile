@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker run -d --name ${DB_CONTAINER} \
+                    sudo docker run -d --name ${DB_CONTAINER} \
                         -e MYSQL_ROOT_PASSWORD=${DB_PASS} \
                         -e MYSQL_DATABASE=${DB_NAME} \
                         -p 3306:3306 mysql:latest
