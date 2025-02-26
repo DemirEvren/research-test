@@ -18,6 +18,21 @@ pipeline {
             }
         }
 
+    stage('Cleanup Old Containers') {
+    steps {
+        script {
+            sh '''
+            docker stop $(docker ps -aq) || true
+            docker rm $(docker ps -aq) || true
+            docker system prune -af || true
+            '''
+        }
+    }
+}
+
+}
+
+
         stage('Start Temporary Database for Tests') {
             steps {
                 script {
@@ -44,7 +59,9 @@ pipeline {
     steps {
         script {
             sh 'docker-compose -f backend/compose-jenkins.test.yml up -d'   // ✅ Use test compose file
-            sh 'sleep 5'  // ✅ Wait for backend to start
+            sh 'sleep 10'  // ✅ Wait for backend to start
+            sh 'docker ps'
+            sh 'docker logs test-backend'  // ✅ Check logs for errors
             sh 'docker exec test-backend npm test'  // ✅ Run tests inside backend container
             sh 'docker-compose -f backend/compose-jenkins.test.yml down'   // ✅ Stop containers after tests
         }
