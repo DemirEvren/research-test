@@ -1,4 +1,4 @@
-# backend/docker-compose.test.yml
+# backend/compose-jenkins.test.yml
 version: '3.8'
 
 services:
