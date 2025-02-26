@@ -43,10 +43,10 @@ pipeline {
        stage('Run Tests in Docker') {
     steps {
         script {
-            sh 'docker-compose -f backend/docker-compose.test.yml up -d'   // ✅ Use test compose file
+            sh 'docker-compose -f backend/compose-jenkins.test.yml up -d'   // ✅ Use test compose file
             sh 'sleep 5'  // ✅ Wait for backend to start
             sh 'docker exec test-backend npm test'  // ✅ Run tests inside backend container
-            sh 'docker-compose -f backend/docker-compose.test.yml down'   // ✅ Stop containers after tests
+            sh 'docker-compose -f backend/compose-jenkins.test.yml down'   // ✅ Stop containers after tests
         }
     }
 }
