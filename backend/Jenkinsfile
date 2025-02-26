@@ -17,20 +17,13 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/DemirEvren/research-test.git'
             }
         }
-
+        
     stage('Cleanup Old Containers') {
-    steps {
-        script {
-            sh '''
-            docker stop $(docker ps -aq) || true
-            docker rm $(docker ps -aq) || true
-            docker system prune -af || true
-            '''
+        steps {
+            sh 'docker stop test-mysql || true'
+            sh 'docker rm test-mysql || true'
+            }
         }
-    }
-}
-
-}
 
 
         stage('Start Temporary Database for Tests') {
@@ -60,8 +53,8 @@ pipeline {
         script {
             sh 'docker-compose -f backend/compose-jenkins.test.yml up -d'   // ✅ Use test compose file
             sh 'sleep 10'  // ✅ Wait for backend to start
-            sh 'docker ps'
-            sh 'docker logs test-backend'  // ✅ Check logs for errors
+            sh 'docker ps' 
+            sh 'docker logs test-backend'  // ✅ Check backend logs
             sh 'docker exec test-backend npm test'  // ✅ Run tests inside backend container
             sh 'docker-compose -f backend/compose-jenkins.test.yml down'   // ✅ Stop containers after tests
         }
@@ -87,7 +80,7 @@ pipeline {
         //         }
         //     }
         // }
-    
+    }
 
     post {
         always {
