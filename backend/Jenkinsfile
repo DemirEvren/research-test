@@ -1,0 +1,75 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'backend-app'  // Final production image
+        TEST_IMAGE = 'backend-test'  // Temporary test image
+        DB_CONTAINER = 'mysql-test-db'  // Database for testing
+        DB_NAME = 'testdb'
+        DB_USER = 'root'
+        DB_PASS = 'password'
+        AWS_HOST = 'your-ec2-instance'  // Replace with your AWS instance
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/DemirEvren/research-test.git'
+            }
+        }
+
+        stage('Start Temporary Database for Tests') {
+            steps {
+                script {
+                    sh '''
+                    docker run -d --name ${DB_CONTAINER} \
+                        -e MYSQL_ROOT_PASSWORD=${DB_PASS} \
+                        -e MYSQL_DATABASE=${DB_NAME} \
+                        -p 3306:3306 mysql:latest
+                    sleep 10  # Give MySQL time to start
+                    '''
+                }
+            }
+        }
+
+        stage('Build Test Image') {
+            steps {
+                dir('backend') {
+                    sh 'docker build -t ${TEST_IMAGE} .'
+                }
+            }
+        }
+
+       stage('Run Tests in Docker') {
+    steps {
+        sh 'docker run --rm --network="host" ${TEST_IMAGE} npm test'
+    }
+}
+
+        stage('Build Production Image') {
+            steps {
+                dir('backend') {
+                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                }
+            }
+        }
+
+        // stage('Deploy to AWS') {
+        //     steps {
+        //         sshagent(['ec2-ssh-key']) {
+        //             sh '''
+        //             docker save ${DOCKER_IMAGE} | ssh ec2-user@${AWS_HOST} 'docker load'
+        //             ssh ec2-user@${AWS_HOST} 'docker run -d -p 8090:8090 --name backend ${DOCKER_IMAGE}'
+        //             '''
+        //         }
+        //     }
+        // }
+    }
+
+    post {
+        always {
+            sh 'docker stop ${DB_CONTAINER} && docker rm ${DB_CONTAINER}'
+            cleanWs()
+        }
+    }
+}
