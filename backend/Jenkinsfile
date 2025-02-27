@@ -30,21 +30,6 @@ pipeline {
             }
         }
 
-
-        stage('Start Temporary Database for Tests') {
-            steps {
-                script {
-                    sh '''
-                    docker run -d --name ${DB_CONTAINER} \
-                        -e MYSQL_ROOT_PASSWORD=${DB_PASS} \
-                        -e MYSQL_DATABASE=${DB_NAME} \
-                        -p 3308:3306 mysql:latest
-                    sleep 10  # Give MySQL time to start
-                    '''
-                }
-            }
-        }
-
         stage('Build Test Image') {
             steps {
                 dir('backend') {
