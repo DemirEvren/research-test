@@ -2,7 +2,10 @@ const request = require("supertest");
 
 const BASE_URL = process.env.TEST_MODE === "true"
   ? "http://test-backend:8080"  // ✅ Inside Docker network
-  : "http://localhost:8090";     // ✅ From Jenkins (host machine)
+  : process.env.LOCAL_TEST === "true"
+  ? "http://localhost:8090"     // ✅ Local development
+  : "http://localhost:8081";     // ✅ Jenkins pipeline
+
 
 // ❌ REMOVE: `module.exports = BASE_URL;` (not needed)
 
