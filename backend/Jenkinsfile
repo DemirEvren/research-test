@@ -42,7 +42,10 @@ stage('Run Tests in Docker') {
             sh """
             echo "Starting test containers..."
             docker-compose -f backend/compose-jenkins.test.yml up -d
-
+            
+            echo "⏳ Waiting for backend to start..."
+            sleep 15
+            
             echo "Running tests..."
             docker exec test-backend sh -c \"
                 export TEST_MODE=true
