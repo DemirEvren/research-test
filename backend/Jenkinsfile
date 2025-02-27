@@ -48,6 +48,9 @@ stage('Run Tests in Docker') {
             echo "⏳ Waiting for backend to start..."
             sleep 10
 
+            echo "jest version:"
+            npx jest --version
+
             echo "🐳 Running containers:"
             docker ps
 
@@ -56,6 +59,7 @@ stage('Run Tests in Docker') {
 
             echo "🚀 Running tests..."
             docker exec test-backend /bin/sh -c '
+                npx jest --version
                 export TEST_MODE=true
                 echo "🔍 TEST_MODE is set to: $TEST_MODE"
                 npm test -- --verbose || echo "❌ Tests failed"
