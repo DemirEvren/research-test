@@ -20,8 +20,8 @@ pipeline {
         
     stage('Cleanup Old Containers') {
         steps {
-            sh 'docker stop test-mysql || true'
-            sh 'docker rm test-mysql || true'
+            sh 'docker stop mysql-test-db || true'
+            sh 'docker rm mysql-test-db || true'
             }
         }
 
