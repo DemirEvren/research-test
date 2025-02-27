@@ -39,25 +39,19 @@ pipeline {
 stage('Run Tests in Docker') {
     steps {
         script {
-            sh '''
+            sh """
             echo "🚀 Starting test containers..."
             docker-compose -f backend/compose-jenkins.test.yml up -d
 
-            echo "⏳ Waiting for backend to start..."
-            sleep 15
-
             echo "🚀 Running tests..."
-            docker exec test-backend /bin/sh -c '
-                npx jest --version
-                export TEST_MODE=true
-                echo "🔍 TEST_MODE is set to: $TEST_MODE"
-                npm test -- --verbose || echo "❌ Tests failed"
-            '
-
-            '''
+            docker exec test-backend sh -c \"
+                npm test --verbose || echo '❌ Tests failed'
+            \"
+            """
         }
     }
 }
+
 
         stage('Build Production Image') {
             steps {
