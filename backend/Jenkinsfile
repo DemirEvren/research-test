@@ -45,7 +45,9 @@ stage('Run Tests in Docker') {
 
             echo "🚀 Running tests..."
             docker exec test-backend /bin/sh -c '
-                npm test -- --verbose || echo "❌ Tests failed"
+            export TEST_MODE=true
+            echo "🔍 TEST_MODE is set to: $TEST_MODE"
+            npm test -- --verbose || echo "❌ Tests failed"
             '
 
             '''
