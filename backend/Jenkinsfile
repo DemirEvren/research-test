@@ -59,39 +59,6 @@ stage('Run Tests in Docker') {
     }
 }
 
-
-
-//       stage('Run Tests in Docker') {
-//     steps {
-//         script {
-//             sh '''
-//             # Start backend and MySQL container for tests
-//             docker-compose -f backend/compose-jenkins.test.yml up -d
-
-//             # Wait for backend to start
-//             sleep 10
-
-//             # Debugging: Check running containers
-//             docker ps
-
-//             # Debugging: Check backend logs
-//             docker logs test-backend
-
-//             # 🚀 Run tests with TEST_MODE inside backend container
-//             docker exec test-backend /bin/sh -c 'export TEST_MODE=true && npm test -- --verbose || echo "❌ Tests failed"'
-
-
-//             # Stop and remove test containers after tests
-//             docker-compose -f backend/compose-jenkins.test.yml down
-//             '''
-//         }
-//     }
-// }
-
-
-
-
-
         stage('Build Production Image') {
             steps {
                 dir('backend') {
