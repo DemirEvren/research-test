@@ -55,7 +55,8 @@ pipeline {
             docker logs test-backend
 
             # 🚀 Run tests with TEST_MODE inside backend container
-            docker exec test-backend /bin/sh -c 'export TEST_MODE=true && npm test || echo "❌ Tests failed"'
+            docker exec test-backend /bin/sh -c 'export TEST_MODE=true && npm test -- --verbose || echo "❌ Tests failed"'
+
 
             # Stop and remove test containers after tests
             docker-compose -f backend/compose-jenkins.test.yml down
