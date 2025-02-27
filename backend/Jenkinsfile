@@ -46,15 +46,6 @@ stage('Run Tests in Docker') {
             echo "⏳ Waiting for backend to start..."
             sleep 15
 
-            echo "jest version:"
-            npx jest --version
-
-            echo "🐳 Running containers:"
-            docker ps
-
-            echo "📜 Backend logs before running tests:"
-            docker logs test-backend || echo "⚠️ No logs available"
-
             echo "🚀 Running tests..."
             docker exec test-backend /bin/sh -c '
                 npx jest --version
@@ -63,12 +54,6 @@ stage('Run Tests in Docker') {
                 npm test -- --verbose || echo "❌ Tests failed"
             '
 
-            echo "📜 Backend logs after running tests:"
-            docker logs test-backend || echo "⚠️ No logs available"
-
-            # 🚫 Commented out to keep containers running for debugging
-            # echo "🧹 Stopping test containers..."
-            # docker-compose -f backend/compose-jenkins.test.yml down || echo "⚠️ Cleanup failed"
             '''
         }
     }
