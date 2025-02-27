@@ -67,7 +67,7 @@ pipeline {
             sh 'docker logs test-backend'
 
             // Run tests inside backend container and pass the correct DB port
-            sh 'docker exec -e TEST_MODE=true -e DBPORT=3307 test-backend npm test'
+            sh 'docker exec test-backend /bin/sh -c "export TEST_MODE=true && npm test"'
 
             // Stop and remove test containers after tests
             sh 'docker-compose -f backend/compose-jenkins.test.yml down'

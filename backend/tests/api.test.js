@@ -1,6 +1,6 @@
 const request = require("supertest");
 
-const BASE_URL = process.env.TEST_MODE
+const BASE_URL = process.env.TEST_MODE === "true"
   ? "http://test-backend:8080"  // ✅ Inside Docker network
   : "http://localhost:8090";     // ✅ From Jenkins (host machine)
 
