@@ -24,8 +24,8 @@ pipeline {
             sh 'docker rm mysql-test-db || true'
             sh 'docker stop test-mysql || true'
             sh 'docker rm test-mysql || true'
-            sh 'docker stop test-backend || true' 
-            sh 'docker rm test-backend || true' 
+            // sh 'docker stop test-backend || true' 
+            // sh 'docker rm test-backend || true' 
             
             }
         }
