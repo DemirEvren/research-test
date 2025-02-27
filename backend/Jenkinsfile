@@ -41,25 +41,29 @@ pipeline {
       stage('Run Tests in Docker') {
     steps {
         script {
-            // Start backend and MySQL container for tests
-            sh 'docker-compose -f backend/compose-jenkins.test.yml up -d'
+            sh '''
+            # Start backend and MySQL container for tests
+            docker-compose -f backend/compose-jenkins.test.yml up -d
 
-            // Wait for backend to start
-            sh 'sleep 10'
+            # Wait for backend to start
+            sleep 10
 
-            // Debugging: Check running containers
-            sh 'docker ps'
+            # Debugging: Check running containers
+            docker ps
 
-            // Debugging: Check backend logs
-            sh 'docker logs test-backend'
+            # Debugging: Check backend logs
+            docker logs test-backend
 
-            // 🚀 CORRECT: Run tests with TEST_MODE inside backend container
-            sh 'docker exec test-backend /bin/sh -c 'export TEST_MODE=true && npm test || echo "❌ Tests failed"'
-        
-            sh 'docker-compose -f backend/compose-jenkins.test.yml down'
+            # 🚀 Run tests with TEST_MODE inside backend container
+            docker exec test-backend /bin/sh -c 'export TEST_MODE=true && npm test || echo "❌ Tests failed"'
+
+            # Stop and remove test containers after tests
+            docker-compose -f backend/compose-jenkins.test.yml down
+            '''
         }
     }
 }
+
 
 
 
