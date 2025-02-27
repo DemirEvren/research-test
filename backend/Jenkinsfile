@@ -64,12 +64,14 @@ stage('Run Tests in Docker') {
             echo "📜 Backend logs after running tests:"
             docker logs test-backend || echo "⚠️ No logs available"
 
-            echo "🧹 Stopping test containers..."
-            docker-compose -f backend/compose-jenkins.test.yml down || echo "⚠️ Cleanup failed"
+            # 🚫 Commented out to keep containers running for debugging
+            # echo "🧹 Stopping test containers..."
+            # docker-compose -f backend/compose-jenkins.test.yml down || echo "⚠️ Cleanup failed"
             '''
         }
     }
 }
+
 
 
 //       stage('Run Tests in Docker') {
