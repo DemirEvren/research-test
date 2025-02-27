@@ -38,7 +38,7 @@ pipeline {
             }
         }
 
-       stage('Run Tests in Docker') {
+      stage('Run Tests in Docker') {
     steps {
         script {
             // Start backend and MySQL container for tests
@@ -53,14 +53,15 @@ pipeline {
             // Debugging: Check backend logs
             sh 'docker logs test-backend'
 
-            // Run tests inside backend container and pass the correct DB port
+            // 🚀 CORRECT: Run tests with TEST_MODE inside backend container
             sh 'docker exec test-backend /bin/sh -c "export TEST_MODE=true && npm test"'
 
-            // Stop and remove test containers after tests
+            // Stop test containers after tests
             sh 'docker-compose -f backend/compose-jenkins.test.yml down'
         }
     }
 }
+
 
 
 
