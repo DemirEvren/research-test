@@ -1,8 +1,11 @@
 const Sequelize = require('sequelize');
 
+const isDocker = process.env.TEST_MODE === "true" || process.env.DOCKER_ENV === "true";
+
+
 const sequelize = new Sequelize({
     dialect: 'mysql',
-    host: process.env.DBURL || 'localhost',
+    host: isDocker ? 'test-mysql' : 'localhost',
     username: process.env.DBUSER || 'root',
     password: process.env.DBPASSWORD || '',
     database: process.env.DBDATABASE || 'todo',
