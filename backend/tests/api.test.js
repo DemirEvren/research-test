@@ -4,8 +4,7 @@ const BASE_URL = process.env.TEST_MODE
   ? "http://test-backend:8080"  // ✅ Inside Docker network
   : "http://localhost:8090";     // ✅ From Jenkins (host machine)
 
-module.exports = BASE_URL;
-
+// ❌ REMOVE: `module.exports = BASE_URL;` (not needed)
 
 describe("Todo API", () => {
     test("GET /todo", async () => {
