@@ -38,32 +38,66 @@ pipeline {
             }
         }
 
-      stage('Run Tests in Docker') {
+stage('Run Tests in Docker') {
     steps {
         script {
             sh '''
-            # Start backend and MySQL container for tests
+            echo "🚀 Starting test containers..."
             docker-compose -f backend/compose-jenkins.test.yml up -d
 
-            # Wait for backend to start
+            echo "⏳ Waiting for backend to start..."
             sleep 10
 
-            # Debugging: Check running containers
+            echo "🐳 Running containers:"
             docker ps
 
-            # Debugging: Check backend logs
-            docker logs test-backend
+            echo "📜 Backend logs before running tests:"
+            docker logs test-backend || echo "⚠️ No logs available"
 
-            # 🚀 Run tests with TEST_MODE inside backend container
-            docker exec test-backend /bin/sh -c 'export TEST_MODE=true && npm test -- --verbose || echo "❌ Tests failed"'
+            echo "🚀 Running tests..."
+            docker exec test-backend /bin/sh -c '
+                export TEST_MODE=true
+                echo "🔍 TEST_MODE is set to: $TEST_MODE"
+                npm test -- --verbose || echo "❌ Tests failed"
+            '
 
+            echo "📜 Backend logs after running tests:"
+            docker logs test-backend || echo "⚠️ No logs available"
 
-            # Stop and remove test containers after tests
-            docker-compose -f backend/compose-jenkins.test.yml down
+            echo "🧹 Stopping test containers..."
+            docker-compose -f backend/compose-jenkins.test.yml down || echo "⚠️ Cleanup failed"
             '''
         }
     }
 }
+
+
+//       stage('Run Tests in Docker') {
+//     steps {
+//         script {
+//             sh '''
+//             # Start backend and MySQL container for tests
+//             docker-compose -f backend/compose-jenkins.test.yml up -d
+
+//             # Wait for backend to start
+//             sleep 10
+
+//             # Debugging: Check running containers
+//             docker ps
+
+//             # Debugging: Check backend logs
+//             docker logs test-backend
+
+//             # 🚀 Run tests with TEST_MODE inside backend container
+//             docker exec test-backend /bin/sh -c 'export TEST_MODE=true && npm test -- --verbose || echo "❌ Tests failed"'
+
+
+//             # Stop and remove test containers after tests
+//             docker-compose -f backend/compose-jenkins.test.yml down
+//             '''
+//         }
+//     }
+// }
 
 
 
