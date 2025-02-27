@@ -39,21 +39,21 @@ pipeline {
 stage('Run Tests in Docker') {
     steps {
         script {
-            sh '''
-            echo "🚀 Starting test containers..."
+            sh """
+            echo "Starting test containers..."
             docker-compose -f backend/compose-jenkins.test.yml up -d
 
-            echo "🚀 Running tests..."
-            docker exec test-backend /bin/sh -c '
-            export TEST_MODE=true
-            echo "🔍 TEST_MODE is set to: $TEST_MODE"
-            npm test -- --verbose || echo "❌ Tests failed"
-            '
-
-            '''
+            echo "Running tests..."
+            docker exec test-backend sh -c \"
+                export TEST_MODE=true
+                echo 'TEST_MODE is set to: \$TEST_MODE'
+                npm test --verbose || echo ' Tests failed'
+            \"
+            """
         }
     }
 }
+
 
 
         stage('Build Production Image') {
