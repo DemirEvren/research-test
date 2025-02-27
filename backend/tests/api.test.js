@@ -1,6 +1,11 @@
 const request = require("supertest");
 
-const BASE_URL = "http://localhost:8090"; // ✅ Use correct backend port
+const BASE_URL = process.env.TEST_MODE
+  ? "http://test-backend:8080"  // ✅ Inside Docker network
+  : "http://localhost:8090";     // ✅ From Jenkins (host machine)
+
+module.exports = BASE_URL;
+
 
 describe("Todo API", () => {
     test("GET /todo", async () => {
