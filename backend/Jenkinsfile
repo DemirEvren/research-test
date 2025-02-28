@@ -71,7 +71,8 @@ stage('Run Tests in Docker') {
             steps { 
                 sshagent(['backend-ssh-key']) {  //  Securely loads the key from Jenkins credentials
                     sh '''
-                    scp backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/
+                    scp -o StrictHostKeyChecking=no backend.tar.gz $AWS_BACKEND:/home/ubuntu/
+
                     '''
                     // sh '''
                     // echo "Copying artifact to Bastion Host..."
