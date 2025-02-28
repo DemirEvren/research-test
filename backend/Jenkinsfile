@@ -8,7 +8,7 @@ pipeline {
         DB_USER = 'root'
         DB_PASS = 'password'
         AWS_BASTION = 'ec2-user@54.210.87.152'   // Bastion server changes because we dont have an elastic IP yet
-        AWS_BACKEND = 'ec2-user@10.0.1.182' // Internal Private IP of the backend server
+        AWS_BACKEND = 'ubuntu@54.159.43.225' // Internal Private IP of the backend server
         BACKEND_SSH_KEY = '/home/ec2-user/.keys/backend-key.pem' // Path to key for the backend on bastion host
     }
 
@@ -68,24 +68,27 @@ stage('Run Tests in Docker') {
     }
 }
  stage('Deploy to AWS via Bastion') {
-            steps {
-                sshagent(['ec2-ssh-key']) {  // Jenkins uses this key for Bastion
+            steps { 
+                sshagent(['backend-ssh-key']) {  //  Securely loads the key from Jenkins credentials
                     sh '''
-                    echo "Copying artifact to Bastion Host..."
-                    scp -i ~/.ssh/bastion-key.pem backend.tar.gz ${AWS_BASTION}:/home/ec2-user/
-
-                    echo "Copying artifact from Bastion to Backend..."
-                    ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'scp -i ${BACKEND_SSH_KEY} /home/ec2-user/backend.tar.gz ${AWS_BACKEND}:/home/ec2-user/'
-
-                    echo "Extracting files on Backend Server..."
-                    ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "tar -xzf /home/ec2-user/backend.tar.gz -C /home/ec2-user/"'
-
-                    echo "Installing dependencies on Backend Server..."
-                    ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "cd /home/ec2-user/backend && npm install"'
-
-                    echo "Restarting the backend..."
-                    ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "pm2 restart all || nohup npm start &"'
+                    scp backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/
                     '''
+                    // sh '''
+                    // echo "Copying artifact to Bastion Host..."
+                    // scp -i ~/.ssh/bastion-key.pem backend.tar.gz ${AWS_BASTION}:/home/ec2-user/
+
+                    // echo "Copying artifact from Bastion to Backend..."
+                    // ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'scp -i ${BACKEND_SSH_KEY} /home/ec2-user/backend.tar.gz ${AWS_BACKEND}:/home/ec2-user/'
+
+                    // echo "Extracting files on Backend Server..."
+                    // ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "tar -xzf /home/ec2-user/backend.tar.gz -C /home/ec2-user/"'
+
+                    // echo "Installing dependencies on Backend Server..."
+                    // ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "cd /home/ec2-user/backend && npm install"'
+
+                    // echo "Restarting the backend..."
+                    // ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "pm2 restart all || nohup npm start &"'
+                    // '''
                 }
             }
         }
