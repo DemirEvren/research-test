@@ -82,6 +82,7 @@ stage('Run Tests in Docker') {
                         ssh -t -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} \"
                             echo 'Stopping backend...' && 
                             whoami &&
+                            ls ~ &&
                             pkill npm || true && pkill node || true && 
                             echo 'Extracting files on Backend Server...' && 
                             tar -xzf /home/ubuntu/backend.tar.gz -C /home/ubuntu/ && 
