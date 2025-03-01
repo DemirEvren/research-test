@@ -72,23 +72,15 @@ stage('Run Tests in Docker') {
             steps { 
                 sshagent(['backend-ssh-key']) {  //  Securely loads the key from Jenkins credentials
                     
-                    sh """                    
-    scp -o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ubuntu/
-    ssh -o StrictHostKeyChecking=no ${AWS_BASTION} "
-        scp -i ${BACKEND_SSH_KEY} /home/ubuntu/backend.tar.gz ${AWS_BACKEND} &&
-        ssh -t -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} \"bash -c '
-            echo Stopping backend... &&
-            whoami &&
-            ls ~ &&
-            pkill npm || true && pkill node || true &&
-            echo Extracting files on Backend Server... &&
-            tar -xzf /home/ubuntu/backend.tar.gz -C /home/ubuntu/ &&
-            echo Installing dependencies... &&
-            cd /home/ubuntu/backend && npm install &&
-            echo Restarting backend at $(date) >> /home/ubuntu/backend.restarted.log &&
-            nohup npm start >> /home/ubuntu/backend.log 2>&1 &' \""
-    "
-"""
+                    sh """
+                        scp -o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ubuntu/
+                        
+                        ssh -o StrictHostKeyChecking=no ${AWS_BASTION} "
+                            scp -i ${BACKEND_SSH_KEY} /home/ubuntu/backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/
+                            ssh -t -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} '/home/ubuntu/deploy_backend.sh'
+                        "
+                    """
+
 
 
                 }
