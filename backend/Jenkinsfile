@@ -76,19 +76,19 @@ stage('Run Tests in Docker') {
                     '''
                     // sh '''
                     // echo "Copying artifact to Bastion Host..."
-                    // scp -i ~/.ssh/bastion-key.pem backend.tar.gz ${AWS_BASTION}:/home/ec2-user/
+                    // scp o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ec2-user/
 
                     // echo "Copying artifact from Bastion to Backend..."
-                    // ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'scp -i ${BACKEND_SSH_KEY} /home/ec2-user/backend.tar.gz ${AWS_BACKEND}:/home/ec2-user/'
+                    // ssh o StrictHostKeyChecking=no ${AWS_BASTION} 'scp -i ${BACKEND_SSH_KEY} /home/ec2-user/backend.tar.gz ${AWS_BACKEND}:/home/ec2-user/'
 
                     // echo "Extracting files on Backend Server..."
-                    // ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "tar -xzf /home/ec2-user/backend.tar.gz -C /home/ec2-user/"'
+                    // ssh o StrictHostKeyChecking=no ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "tar -xzf /home/ec2-user/backend.tar.gz -C /home/ec2-user/"'
 
                     // echo "Installing dependencies on Backend Server..."
-                    // ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "cd /home/ec2-user/backend && npm install"'
+                    // ssh o StrictHostKeyChecking=no ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "cd /home/ec2-user/backend && npm install"'
 
                     // echo "Restarting the backend..."
-                    // ssh -i ~/.ssh/bastion-key.pem ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "pm2 restart all || nohup npm start &"'
+                    // ssh o StrictHostKeyChecking=no ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "pm2 restart all || nohup npm start &"'
                     // '''
                 }
             }
