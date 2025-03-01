@@ -81,7 +81,8 @@ stage('Run Tests in Docker') {
                             scp -i ${BACKEND_SSH_KEY} /home/ubuntu/backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/ && 
                         ssh -t -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} \"
                             echo 'Stopping backend...' && 
-                            pkill npm && pkill node && 
+                            whoami &&
+                            pkill npm || true && pkill node || true && 
                             echo 'Extracting files on Backend Server...' && 
                             tar -xzf /home/ubuntu/backend.tar.gz -C /home/ubuntu/ && 
                             echo 'Installing dependencies...' && 
