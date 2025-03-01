@@ -7,9 +7,10 @@ pipeline {
         DB_NAME = 'testdb'
         DB_USER = 'root'
         DB_PASS = 'password'
-        AWS_BASTION = 'ec2-user@54.210.87.152'   // Bastion server changes because we dont have an elastic IP yet
-        AWS_BACKEND = 'ubuntu@52.90.190.200' // Internal Private IP of the backend server
-        BACKEND_SSH_KEY = '/home/ec2-user/.keys/backend-key.pem' // Path to key for the backend on bastion host
+        AWS_BASTION = 'ubuntu@98.82.173.51' //frontend for test purposes   // Bastion server changes because we dont have an elastic IP yet
+        AWS_BACKEND = 'ubuntu@10.0.2.26' // Internal Private IP of the backend server
+        //BACKEND_SSH_KEY = '/home/ec2-user/.keys/backend-key.pem' // Path to key for the backend on bastion host
+        BACKEND_SSH_KEY = '/home/ubuntu/keys/backend-key-pair.pem '
     }
 
     stages {
@@ -70,26 +71,25 @@ stage('Run Tests in Docker') {
  stage('Deploy to AWS via Bastion') {
             steps { 
                 sshagent(['backend-ssh-key']) {  //  Securely loads the key from Jenkins credentials
+                    // sh '''
+                    // scp -o StrictHostKeyChecking=no backend.tar.gz $AWS_BACKEND:/home/ubuntu/
+
+                    // '''
                     sh '''
-                    scp -o StrictHostKeyChecking=no backend.tar.gz $AWS_BACKEND:/home/ubuntu/
+                    
+                    ssh -o StrictHostKeyChecking=no ${AWS_BASTION} \ 
+                    "scp -i ${BACKEND_SSH_KEY} /home/ubuntu/backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/ && \
+                    ssh -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} '\
+                        echo \"Stopping backend...\" && \
+                        pkill npm && pkill node && \
+                        echo \"Extracting files on Backend Server...\" && \
+                        tar -xzf /home/ubuntu/backend.tar.gz -C /home/ubuntu/ && \
+                        echo \"Installing dependencies...\" && \
+                        cd /home/ubuntu/backend && npm install && \
+                        echo \"Restarting backend at $(date)\" >> /home/ubuntu/backend.restarted.log && \
+                        npm start >> /home/ubuntu/backend.log &'"
 
                     '''
-                    // sh '''
-                    // echo "Copying artifact to Bastion Host..."
-                    // scp o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ec2-user/
-
-                    // echo "Copying artifact from Bastion to Backend..."
-                    // ssh o StrictHostKeyChecking=no ${AWS_BASTION} 'scp -i ${BACKEND_SSH_KEY} /home/ec2-user/backend.tar.gz ${AWS_BACKEND}:/home/ec2-user/'
-
-                    // echo "Extracting files on Backend Server..."
-                    // ssh o StrictHostKeyChecking=no ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "tar -xzf /home/ec2-user/backend.tar.gz -C /home/ec2-user/"'
-
-                    // echo "Installing dependencies on Backend Server..."
-                    // ssh o StrictHostKeyChecking=no ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "cd /home/ec2-user/backend && npm install"'
-
-                    // echo "Restarting the backend..."
-                    // ssh o StrictHostKeyChecking=no ${AWS_BASTION} 'ssh -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} "pm2 restart all || nohup npm start &"'
-                    // '''
                 }
             }
         }
