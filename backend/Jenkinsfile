@@ -72,10 +72,11 @@ stage('Run Tests in Docker') {
             steps { 
                 sshagent(['backend-ssh-key']) {  //  Securely loads the key from Jenkins credentials
                     // sh '''
-                    // scp -o StrictHostKeyChecking=no backend.tar.gz $AWS_BACKEND:/home/ubuntu/
+                    // 
 
                     // '''
                     sh """                    
+                        scp -o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ubuntu/
                         ssh -o StrictHostKeyChecking=no ${AWS_BASTION} "
                             scp -i ${BACKEND_SSH_KEY} /home/ubuntu/backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/ && 
                         ssh -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} \"
