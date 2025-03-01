@@ -75,21 +75,21 @@ stage('Run Tests in Docker') {
                     // scp -o StrictHostKeyChecking=no backend.tar.gz $AWS_BACKEND:/home/ubuntu/
 
                     // '''
-                    sh '''
-                    
-                    ssh -o StrictHostKeyChecking=no ${AWS_BASTION} \ 
-                    "scp -i ${BACKEND_SSH_KEY} /home/ubuntu/backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/ && \
-                    ssh -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} '\
-                        echo \"Stopping backend...\" && \
-                        pkill npm && pkill node && \
-                        echo \"Extracting files on Backend Server...\" && \
-                        tar -xzf /home/ubuntu/backend.tar.gz -C /home/ubuntu/ && \
-                        echo \"Installing dependencies...\" && \
-                        cd /home/ubuntu/backend && npm install && \
-                        echo \"Restarting backend at $(date)\" >> /home/ubuntu/backend.restarted.log && \
-                        npm start >> /home/ubuntu/backend.log &'"
+                    sh """                    
+                        ssh -o StrictHostKeyChecking=no ${AWS_BASTION} "
+                            scp -i ${BACKEND_SSH_KEY} /home/ubuntu/backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/ && 
+                        ssh -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} \"
+                            echo 'Stopping backend...' && 
+                            pkill npm && pkill node && 
+                            echo 'Extracting files on Backend Server...' && 
+                            tar -xzf /home/ubuntu/backend.tar.gz -C /home/ubuntu/ && 
+                            echo 'Installing dependencies...' && 
+                            cd /home/ubuntu/backend && npm install && 
+                            echo 'Restarting backend at \$(date)' >> /home/ubuntu/backend.restarted.log && 
+                            nohup npm start >> /home/ubuntu/backend.log 2>&1 &\"
+                            "
+                        """
 
-                    '''
                 }
             }
         }
