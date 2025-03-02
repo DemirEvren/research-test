@@ -87,7 +87,7 @@ stage('Run Tests in Docker') {
 
    post {
     always {
-        sh 'docker system prune -af'  // Remove unused Docker resources
+        //sh 'docker system prune -af'  // Remove unused Docker resources
         cleanWs()  //  Clean Jenkins workspace
         }
     }
