@@ -72,19 +72,18 @@ stage('Run Tests in Docker') {
     steps {
         script {
             sh """
-            echo "containers starten met compose file"
-            docker-compose -f backend/compose-jenkins.test.yml up -d
-            
-            echo "Wachten Op de backend "
-            sleep 15
-            
-            echo "Running tests..."
-            docker exec test-backend sh -c 'export TEST_MODE=true && echo "TEST_MODE is set to: \$TEST_MODE" && npm test --verbose' || exit 1
-
+            echo "Running tests inside the container..."
+            docker exec -i test-backend sh -c '
+                cd /usr/src/app &&
+                export TEST_MODE=true &&
+                echo "TEST_MODE is set to: \$TEST_MODE" &&
+                npm test --verbose
+            ' || exit 1
             """
         }
     }
 }
+
 
         stage('Archive Backend Files') {
             steps {
