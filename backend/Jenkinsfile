@@ -49,11 +49,8 @@ stage('Run Tests in Docker') {
             sleep 15
             
             echo "Running tests..."
-            docker exec test-backend sh -c \"
-                export TEST_MODE=true
-                echo 'TEST_MODE is set to: \$TEST_MODE'
-                npm test --verbose
-            \" || exit 1
+            docker exec test-backend sh -c 'export TEST_MODE=true && echo "TEST_MODE is set to: \$TEST_MODE" && npm test --verbose' || exit 1
+
             """
         }
     }
