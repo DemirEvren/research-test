@@ -19,7 +19,7 @@ services:
     build:
       context: ../frontend
       args:
-        - APIURL=http://localhost:8090
+        - APIURL=http://localhost:8080
     ports:
       - 8100:80
 
