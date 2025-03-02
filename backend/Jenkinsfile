@@ -7,7 +7,7 @@ pipeline {
         DB_NAME = 'testdb'
         DB_USER = 'root'
         DB_PASS = 'password'
-        AWS_BASTION = 'ubuntu@18.234.157.93' //frontend for test purposes   // Bastion server changes because we dont have an elastic IP yet
+        AWS_BASTION = 'ubuntu@54.87.93.177' //frontend for test purposes   // Bastion server changes because we dont have an elastic IP yet
         AWS_BACKEND = 'ubuntu@10.0.2.26' // Internal Private IP of the backend server
         //BACKEND_SSH_KEY = '/home/ec2-user/.keys/backend-key.pem' // Path to key for the backend on bastion host
         BACKEND_SSH_KEY = '/home/ubuntu/keys/backend-key-pair.pem '
