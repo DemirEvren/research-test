@@ -71,6 +71,7 @@ pipeline {
 stage('Run Tests in Docker') {
     steps {
         script {
+            sh 'curl -v http://localhost:8081/todo'  // Test the backend server
             sh """
             echo "Running tests inside the container..."
             docker exec -i test-backend sh -c '
