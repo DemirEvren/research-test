@@ -123,7 +123,7 @@ stage('Run Tests in Docker') {
             archiveArtifacts artifacts: 'backend-logs.txt', fingerprint: true
 
             echo "Cleaning up old images and networks, but keeping containers..."
-            sh 'docker system prune --all --volumes --filter "until=24h" || true'
+            // sh 'docker system prune --all --volumes --filter "until=24h" || true'
 
         cleanWs()  //  Clean Jenkins workspace
         }
