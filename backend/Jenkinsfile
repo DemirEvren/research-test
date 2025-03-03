@@ -7,10 +7,10 @@ pipeline {
         DB_NAME = 'testdb'
         DB_USER = 'root'
         DB_PASS = 'password'
-        AWS_BASTION = 'ubuntu@54.87.93.177' //frontend for test purposes   // Bastion server changes because we dont have an elastic IP yet
-        AWS_BACKEND = 'ubuntu@10.0.2.26' // Internal Private IP of the backend server
+        AWS_BASTION = 'ec2-user@54.164.238.221' //frontend for test purposes   // Bastion server changes because we dont have an elastic IP yet
+        AWS_BACKEND = 'ec2-user@23.21.143.245' // Internal Private IP of the backend server
         //BACKEND_SSH_KEY = '/home/ec2-user/.keys/backend-key.pem' // Path to key for the backend on bastion host
-        BACKEND_SSH_KEY = '/home/ubuntu/keys/backend-key-pair.pem '
+        BACKEND_SSH_KEY = '/home/ec2-user/keys/backend-key-pair.pem '
     }
 
     stages {
@@ -101,14 +101,14 @@ stage('Run Tests in Docker') {
 }
  stage('Deploy to AWS via Bastion') {
             steps { 
-                sshagent(['backend-ssh-key']) {  //  Securely loads the key from Jenkins credentials
+                sshagent(['bastion-ssh-key']) {  //  Securely loads the key from Jenkins credentials
                     
                     sh """
-                        scp -o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ubuntu/
+                        scp -o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ec2-user/
                         
                         ssh -o StrictHostKeyChecking=no ${AWS_BASTION} "
-                            scp -i ${BACKEND_SSH_KEY} /home/ubuntu/backend.tar.gz ${AWS_BACKEND}:/home/ubuntu/
-                            ssh -t -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} '/home/ubuntu/deploy_backend.sh'
+                            scp -i ${BACKEND_SSH_KEY} /home/ec2-user/backend.tar.gz ${AWS_BACKEND}:/home/ec2-user/
+                            ssh -t -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} '/home/ec2-user/deploy_backend.sh'
                         "
                     """
 
