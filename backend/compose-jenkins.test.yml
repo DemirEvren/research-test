@@ -1,4 +1,3 @@
-# backend/compose-jenkins.test.yml
 version: '3.8'
 
 services:
@@ -9,18 +8,21 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: todo
+      MYSQL_DATABASE: testdb  # Choose one!
+      MYSQL_USER: root
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persist MySQL data
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
-      retries: 15
+      retries: 5
 
   backend:
     build:
       context: .
     container_name: test-backend
-    restart: "no"  #  Prevents auto-removal on failure
+    restart: unless-stopped  # Ensures backend restarts if needed
     ports:
       - "8081:8080"
     environment:
@@ -28,9 +30,12 @@ services:
       - DBURL=test-mysql
       - DBUSER=root
       - DBPASSWORD=password
-      - DBDATABASE=todo
+      - DBDATABASE=testdb  # Should match the MySQL service
       - DBPORT=3306
     depends_on:
       mysql:
         condition: service_healthy
-    command: sh -c "sleep 10 && npm start"  #  Start backend automatically
+    command: sh -c "sleep 10 && npm start"  # Ensures MySQL is fully up
+
+volumes:
+  mysql_data:  # Persistent volume for MySQL

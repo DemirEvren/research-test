@@ -22,8 +22,8 @@ pipeline {
         
     stage('Cleanup Old Containers') {
         steps {
-            sh 'docker stop test-mysql || true'
-            sh 'docker rm test-mysql || true'
+            // sh 'docker stop test-mysql || true'
+            // sh 'docker rm test-mysql || true'
             sh 'docker stop test-backend || true' 
             sh 'docker rm test-backend || true' 
             
@@ -39,39 +39,32 @@ pipeline {
         }
 
  stage('Start Containers & Wait for MySQL') {
-            steps {
-                script {
-                    sh """
-                    echo "Starting containers with Docker Compose..."
-                    docker-compose -f backend/compose-jenkins.test.yml up -d
+    steps {
+        script {
+            sh """
+            echo "Ensuring MySQL is running..."
+            docker start test-mysql 2>/dev/null || docker-compose -f backend/compose-jenkins.test.yml up -d mysql
 
-                    echo "Waiting for MySQL to be ready..."
-                    for i in {1..15}; do
-                        if docker exec test-mysql mysqladmin ping -h test-mysql --silent; then
-                            echo "✅ MySQL is ready!"
-                            break
-                        fi
-                        echo "⏳ Waiting for MySQL..."
-                        sleep 5
-                    done
+            echo "Waiting for MySQL to be ready..."
+            for i in {1..15}; do
+                if docker exec test-mysql mysqladmin ping -h localhost --silent; then
+                    echo "✅ MySQL is ready!"
+                    break
+                fi
+                echo "⏳ Waiting for MySQL..."
+                sleep 5
+            done
 
-                    echo "Checking if backend container is running..."
-                    for i in {1..10}; do
-                        if docker ps | grep test-backend; then
-                            echo "✅ Backend is running!"
-                            break
-                        fi
-                        echo "⏳ Waiting for backend to start..."
-                        sleep 5
-                    done
-                    """
-                }
-            }
+            echo "Starting the backend container..."
+            docker-compose -f backend/compose-jenkins.test.yml up -d --force-recreate backend
+            """
         }
+    }
+}
+
 stage('Run Tests in Docker') {
     steps {
         script {
-            sh 'curl -v http://localhost:8081/todo'  // Test the backend server
             sh """
             echo "Running tests inside the container..."
             docker exec -i test-backend sh -c '
