@@ -21,10 +21,9 @@ pipeline {
         
     stage('Cleanup Old Containers') {
         steps {
-            // sh 'docker stop test-mysql || true'
-            // sh 'docker rm test-mysql || true'
             sh 'docker stop test-backend || true' 
             sh 'docker rm test-backend || true' 
+            sh 'docker system prune -af'  // Remove unused Docker resources
             
             }
         }
