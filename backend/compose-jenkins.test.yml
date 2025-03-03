@@ -15,7 +15,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 3s
-      retries: 10  # ⬅️ Increased retries to ensure readiness
+      retries: 10  # ⬅ Increased retries to ensure readiness
 
   backend:
     build:
@@ -31,10 +31,12 @@ services:
       - DBPASSWORD=password
       - DBDATABASE=testdb
       - DBPORT=3306
+    volumes:
+      - ./backend:usr/src/app #volume mounting
     depends_on:
       mysql:
         condition: service_healthy
-    command: sh -c "sleep 15 && npm start"  # ⬅️ Waits extra time before starting
+    command: sh -c "sleep 15 && npm start"  # ⬅ Waits extra time before starting
 
 volumes:
   mysql_data:
