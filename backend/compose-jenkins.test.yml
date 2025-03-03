@@ -8,20 +8,20 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: testdb  # Database name
+      MYSQL_DATABASE: testdb
     volumes:
-      - mysql_data:/var/lib/mysql  # Persist MySQL data
+      - mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 3s
+      retries: 10  # ⬅️ Increased retries to ensure readiness
 
   backend:
     build:
       context: .
     container_name: test-backend
-    restart: unless-stopped  # Ensures backend restarts if needed
+    restart: unless-stopped
     ports:
       - "8081:8080"
     environment:
@@ -29,12 +29,12 @@ services:
       - DBURL=test-mysql
       - DBUSER=root
       - DBPASSWORD=password
-      - DBDATABASE=testdb  # Should match the MySQL service
+      - DBDATABASE=testdb
       - DBPORT=3306
     depends_on:
       mysql:
         condition: service_healthy
-    command: sh -c "sleep 10 && npm start"  # Ensures MySQL is fully up
+    command: sh -c "sleep 15 && npm start"  # ⬅️ Waits extra time before starting
 
 volumes:
-  mysql_data:  # Persistent volume for MySQL
+  mysql_data:

@@ -56,11 +56,12 @@ pipeline {
             done
 
             echo "Starting the backend container..."
-            docker-compose -f backend/compose-jenkins.test.yml up -d --force-recreate backend
+            docker-compose -f backend/compose-jenkins.test.yml up -d backend
             """
         }
     }
 }
+
 
 stage('Run Tests in Docker') {
     steps {
