@@ -31,19 +31,12 @@ pipeline {
         }
 
         stage('Build Test Image') {
-    steps {
-        script {
-            def imageExists = sh(script: "docker images -q backend_backend", returnStdout: true).trim()
-            if (!imageExists) {
-                echo "Backend image does not exist. Building now..."
-                sh 'docker-compose -f backend/compose-jenkins.test.yml build backend'
-            } else {
-                echo "Backend image already exists. Skipping build."
+            steps {
+                dir('backend') {
+                    sh 'docker build -t ${TEST_IMAGE} .'
+                }
             }
         }
-    }
-}
-
 
  stage('Start Containers & Wait for MySQL') {
     steps {
@@ -98,19 +91,14 @@ stage('Run Tests in Docker') {
 
 
         stage('Archive Backend Files') {
-    steps {
-        script {
-            echo "Copying updated code from container to workspace..."
-            sh 'docker cp test-backend:/usr/src/app ./backend-latest'  //  Copy updated code
+            steps {
+                sh '''
+                tar -czf backend.tar.gz backend/
+                '''
+        archiveArtifacts artifacts: 'backend.tar.gz', fingerprint: true
 
-            echo "Creating artifact..."
-            sh 'tar -czf backend.tar.gz backend-latest/'
-
-            archiveArtifacts artifacts: 'backend.tar.gz', fingerprint: true
-        }
     }
 }
-
  stage('Deploy to AWS via Bastion') {
             steps { 
                 sshagent(['backend-ssh-key']) {  //  Securely loads the key from Jenkins credentials

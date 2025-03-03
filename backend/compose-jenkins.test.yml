@@ -31,8 +31,6 @@ services:
       - DBPASSWORD=password
       - DBDATABASE=testdb
       - DBPORT=3306
-    volumes:
-      - "/var/lib/jenkins/jobs/research-test/workspace/backend:/usr/src/app"
     depends_on:
       mysql:
         condition: service_healthy
