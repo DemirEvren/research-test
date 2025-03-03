@@ -101,7 +101,7 @@ stage('Run Tests in Docker') {
     steps {
         script {
             echo "Copying updated code from container to workspace..."
-            sh 'docker cp test-backend:/usr/src/app ./backend-latest'  #  Copy updated code
+            sh 'docker cp test-backend:/usr/src/app ./backend-latest'  //  Copy updated code
 
             echo "Creating artifact..."
             sh 'tar -czf backend.tar.gz backend-latest/'
