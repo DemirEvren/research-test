@@ -43,7 +43,12 @@ pipeline {
         script {
             sh """
             echo "Ensuring MySQL is running..."
-            docker start test-mysql 2>/dev/null || docker-compose -f backend/compose-jenkins.test.yml up -d mysql
+            if [ ! "\$(docker ps -q -f name=test-mysql)" ]; then
+                echo "Starting MySQL container..."
+                docker start test-mysql 2>/dev/null || docker-compose -f backend/compose-jenkins.test.yml up -d mysql
+            else
+                echo "✅ MySQL is already running."
+            fi
 
             echo "Waiting for MySQL to be ready..."
             for i in {1..15}; do
@@ -55,12 +60,13 @@ pipeline {
                 sleep 5
             done
 
-            echo "Starting the backend container..."
+            echo "Starting backend container..."
             docker-compose -f backend/compose-jenkins.test.yml up -d backend
             """
         }
     }
 }
+
 
 
 stage('Run Tests in Docker') {
