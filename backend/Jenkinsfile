@@ -9,7 +9,7 @@ pipeline {
         DB_PASS = 'password'
         AWS_BASTION = 'ec2-user@54.164.238.221' //frontend for test purposes   // Bastion server changes because we dont have an elastic IP yet
         AWS_BACKEND = 'ec2-user@23.21.143.245' // Internal Private IP of the backend server
-        BACKEND_SSH_KEY = '/home/ec2-user/.keys/backend-key.pem' // Path to key for the backend on bastion host
+        BACKEND_SSH_KEY = '/home/ec2-user/.keys/snb3-backend.pem ' // Path to key for the backend on bastion host
     }
 
     stages {
@@ -120,14 +120,8 @@ stage('Run Tests in Docker') {
 
    post {
     always {
-        //sh 'docker system prune -af'  // Remove unused Docker resources
+        sh 'docker system prune -af'  // Remove unused Docker resources
          echo "Saving logs before cleanup..."
-            sh 'docker logs test-backend > backend-logs.txt || echo "No logs found, container may have been removed"'
-            archiveArtifacts artifacts: 'backend-logs.txt', fingerprint: true
-
-            echo "Cleaning up old images and networks, but keeping containers..."
-            // sh 'docker system prune --all --volumes --filter "until=24h" || true'
-
         cleanWs()  //  Clean Jenkins workspace
         }
     }
