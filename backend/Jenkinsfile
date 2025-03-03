@@ -60,6 +60,7 @@ pipeline {
                 sleep 5
             done
 
+
             echo "Starting backend container..."
             docker-compose -f backend/compose-jenkins.test.yml up -d backend
             """
@@ -73,6 +74,9 @@ stage('Run Tests in Docker') {
     steps {
         script {
             sh """
+            echo "Wachten Op de backend "
+            sleep 15
+
             echo "Running tests inside the container..."
             docker exec -i test-backend sh -c '
                 cd /usr/src/app &&
