@@ -8,8 +8,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: testdb  # Choose one!
-      MYSQL_USER: root
+      MYSQL_DATABASE: testdb  # Database name
     volumes:
       - mysql_data:/var/lib/mysql  # Persist MySQL data
     healthcheck:
