@@ -102,11 +102,11 @@ stage('Run Tests in Docker') {
                 sshagent(['bastion-ssh-key']) {  //  Securely loads the key from Jenkins credentials
                     
                     sh """
-                        scp -o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ec2-user/
+                        scp -o StrictHostKeyChecking=no backend.tar.gz ${AWS_BASTION}:/home/ec2-user/.backend-pipeline/
                         
                         ssh -o StrictHostKeyChecking=no ${AWS_BASTION} "
-                            scp -i ${BACKEND_SSH_KEY} /home/ec2-user/backend.tar.gz ${AWS_BACKEND}:/home/ec2-user/
-                            ssh -t -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} '/home/ec2-user/deploy_backend.sh'
+                            scp -i ${BACKEND_SSH_KEY} /home/ec2-user/backend.tar.gz ${AWS_BACKEND}:/home/ec2-user/.backend-pipeline/
+                            ssh -t -o StrictHostKeyChecking=no -i ${BACKEND_SSH_KEY} ${AWS_BACKEND} '/home/ec2-user/.backend-pipeline/deploy_backend.sh'
                         "
                     """
 
